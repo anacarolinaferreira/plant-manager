@@ -3,12 +3,14 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList
+  FlatList,
+  ActivityIndicator
 } from 'react-native';
 
 import { Header } from '../components/Header';
 import { EnviromentButton } from '../components/EnviromentButton';
 import { PlantCardPrimary } from '../components/PlantCardPrimary';
+import { Load } from '../components/Load';
 
 
 import colors from '../styles/colors';
@@ -37,11 +39,58 @@ export function PlantSelect() {
 
   const [environments, setEnvironments] = useState<environmentProps[]>([]);
   const [plants, setPlants] = useState<plantProps[]>([]);
+  const [filteredPlants, setFilteredPlants] = useState<plantProps[]>([]);
+  const [environmentsSelected, setEnvironmentsSelected] = useState('all');
+  const [loading, setLoading] = useState(true);
+
+  const [page, setPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadedAll, setLoadedAll] = useState(false);
+
+  function handleEnvironmentsSelected(enviroment: string) {
+    setEnvironmentsSelected(enviroment);
+
+    if (enviroment === 'all')
+      return setFilteredPlants(plants);
+
+    const filtered = plants.filter(plant =>
+      plant.environments.includes(enviroment)
+    );
+
+    setFilteredPlants(filtered)
+  }
+
+  async function fetchPlants() {
+    const { data } = await api.get(`plants?_sort=name&_order=asc&_page=${page}&_limit=8`);
+
+    if (!data)
+      return setLoading(true);
+
+    if (page > 1) {
+      setPlants(oldValue => [...oldValue, ...data])
+      setFilteredPlants(oldValue => [...oldValue, ...data])
+    } else {
+      setPlants(data);
+      setFilteredPlants(data);
+    }
+    setLoading(false);
+    setLoadingMore(false);
+
+  }
+
+  function handleFetchMore(distance: number) {
+    if (distance < 1)
+      return
+
+    setLoadingMore(true);
+    setPage(oldValue => oldValue + 1);
+    fetchPlants();
+  }
 
   useEffect(() => {
 
     async function fetchEnviroment() {
-      const { data } = await api.get('plants_environments');
+      const { data } = await api.get('plants_environments?_sort=title&_order=asc');
       setEnvironments([
         { key: 'all', title: 'Todos' },
         ...data
@@ -50,27 +99,15 @@ export function PlantSelect() {
 
     fetchEnviroment();
 
-  })
-
-  // useEffect(() => {
-  //   async function fetchPlants() {
-  //     const { data } = await api.get(`plants?_sort=name&_order=asc`);
-
-  //     setPlants(data)
-  //     setFilteredPlants(data)
-  //   }
-
-  //   fetchPlants()
-  // }, []);
+  }, [])
 
   useEffect(() => {
-    async function fetchPlants() {
-      const { data } = await api.get('plants');
-      setPlants(data)
-    }
 
     fetchPlants();
   }, [])
+
+  if (loading)
+    return < Load />
 
   return (
     <View style={styles.container}>
@@ -85,20 +122,33 @@ export function PlantSelect() {
           renderItem={({ item }) => (
             <EnviromentButton
               title={item.title}
+              active={item.key === environmentsSelected}
+              onPress={() => handleEnvironmentsSelected(item.key)}
             />
           )}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.enviromentList}
+          ListHeaderComponent={<View />}
+          ListHeaderComponentStyle={{ marginRight: 32 }}
         />
       </View>
 
       <View style={styles.plants}>
         <FlatList
-          data={plants}
+          data={filteredPlants}
           renderItem={({ item }) => (
             <PlantCardPrimary data={item} />
           )}
+          showsVerticalScrollIndicator={false}
+          numColumns={2}
+          onEndReachedThreshold={0.1}
+          onEndReached={({ distanceFromEnd }) => handleFetchMore(distanceFromEnd)}
+          ListFooterComponent={
+            loadingMore 
+            ? <ActivityIndicator color={colors.green}/>
+            : <></>
+          }
         />
       </View>
     </View>
@@ -130,7 +180,6 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     paddingBottom: 5,
-    marginLeft: 32,
     marginVertical: 32
   },
   plants: {
