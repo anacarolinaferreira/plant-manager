@@ -8,16 +8,23 @@ import {
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/core';
 
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 
 import userImg from '../assets/profile.jpeg';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export function Header() {
   const [userName, setUserName] = useState<string>();
 
+  const navigation = useNavigation();
+
+  function handleProfile() {
+    navigation.navigate("Profile")
+  }
   useEffect(() => {
 
     async function loadStorageUserName() {
@@ -35,7 +42,12 @@ export function Header() {
         <Text style={styles.greeting}>Olá,</Text>
         <Text style={styles.userName}>{userName}</Text>
       </View>
-      <Image source={userImg} style={styles.image} />
+      <TouchableOpacity onPress={handleProfile}>
+        <Image
+          source={userImg}
+          style={styles.image}
+        />
+      </TouchableOpacity>
     </View>
   )
 }
