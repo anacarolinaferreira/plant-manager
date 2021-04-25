@@ -4,7 +4,8 @@ Aplicativo que possui listagem, emite notificações de rega de plantas, permiti
 
   - Desenvolvido durante a 5ª edição da Next Level Week - Rocketseat
   - Desafio: adicionada a opção de plantas favoritas.
-  
+
+![telas](https://github.com/anacarolinaferreira/plant-manager/blob/main/readme/screeans.png)
 ![projeto](https://github.com/anacarolinaferreira/plant-manager/blob/main/readme/projeto.gif)
  
 ### Tecnologias utilizadas
