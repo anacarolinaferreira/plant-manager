@@ -1,7 +1,5 @@
 # Plant Manager
 
-# Ecoleta
-
 Aplicativo que possui listagem, emite notificações de rega de plantas, permitindo assim que suas plantinhas fiquem sempre bem cuidadas e cada vez mais lindas.
 
   - Desenvolvido durante a 5ª edição da Next Level Week - Rocketseat
