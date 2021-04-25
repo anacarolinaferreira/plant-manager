@@ -15,6 +15,7 @@ import botanicoImg from '../assets/favorites/botanico.png'
 import manjericaoImg from '../assets/favorites/manjericao.png'
 import rosaImg from '../assets/favorites/rosa.png'
 import fonts from '../styles/fonts';
+import { Button } from '../components/Button';
 
 export function Profile() {
 
@@ -49,6 +50,9 @@ export function Profile() {
           onEndReachedThreshold={0.1}
         />
       </View>
+      <View style={styles.button}>
+        <Button title="Adicionar" />
+      </View>
     </View>
   )
 }
@@ -75,10 +79,10 @@ const styles = StyleSheet.create({
   },
   card: {
     margin: 10,
-    alignItems:'center',
+    alignItems: 'center',
     backgroundColor: colors.green_light,
     padding: 20,
-    borderRadius:16
+    borderRadius: 16
   },
   image: {
     width: 80,
@@ -86,7 +90,10 @@ const styles = StyleSheet.create({
   },
   cardsName: {
     fontFamily: fonts.text,
-    fontSize:15,
+    fontSize: 15,
     color: colors.heading
+  },
+  button: {
+    marginBottom: 25
   }
 })
